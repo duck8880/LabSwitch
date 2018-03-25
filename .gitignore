@@ -1,0 +1,10 @@
+/*
+
+!*/
+!.gitignore
+
+!*.c
+!*.h
+!*.config
+!makefile
+!README
