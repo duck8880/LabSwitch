@@ -413,9 +413,9 @@ while(1) {
 					job_q_add(&job_q, new_job);
 					break;
 				
-				case (char) PKT_FILE_UPLOAD_IMD:
+				case (char) PKT_FILE_UPLOAD_MID:
 					new_job->type 
-						= JOB_FILE_UPLOAD_RECV_IMD;
+						= JOB_FILE_UPLOAD_RECV_MID;
 					job_q_add(&job_q, new_job);
 					break;
 				// Chris modified--
@@ -568,7 +568,7 @@ while(1) {
 							= new_job->file_upload_dst;
 						new_packet->src = (char) host_id;
 						new_packet->type 
-							= PKT_FILE_UPLOAD_IMD;
+							= PKT_FILE_UPLOAD_MID;
 					
 						memcpy(new_packet->payload, string, n);
 						new_packet->length = n;
@@ -582,7 +582,7 @@ while(1) {
 						new_job2->type = JOB_SEND_PKT_ALL_PORTS;
 						new_job2->packet = new_packet;
 						job_q_add(&job_q, new_job2);
-						printf("Node %d debug: PKT_FILE_UPLOAD_IMD. Packet Len = %d\n", host_id, n);
+						printf("Node %d debug: PKT_FILE_UPLOAD_MID. Packet Len = %d\n", host_id, n);
 						printf("Node %d debug: Packet content:\n%s\n", host_id, string);
 					}
 					
@@ -667,7 +667,7 @@ while(1) {
 			free(new_job);
 			break;
 		
-		case JOB_FILE_UPLOAD_RECV_IMD:
+		case JOB_FILE_UPLOAD_RECV_MID:
 
 			/* 
 			 * Download packet payload into file buffer 
@@ -686,7 +686,7 @@ while(1) {
 					 * Write contents in the file
 					 * buffer into file
 					 */
-					printf("Node %d debug: JOB_FILE_UPLOAD_RECV_IMD\n", host_id);
+					printf("Node %d debug: JOB_FILE_UPLOAD_RECV_MID\n", host_id);
 					while (f_buf_upload.occ > 0) {
 						n = file_buf_remove(
 							&f_buf_upload, 

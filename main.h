@@ -38,11 +38,24 @@ struct packet { /* struct for a packet */
 	char payload[PAYLOAD_MAX];
 };
 
+// Chris added++ 03252018
+// Payload of tree packet
+struct payload_tree_packet {
+	int rootID;
+	int rootDist;
+	char senderType;
+	char senderChild;
+}
+// Chris added--
+
+
 /* Types of packets */
 
 #define PKT_PING_REQ		0
 #define PKT_PING_REPLY		1
 #define PKT_FILE_UPLOAD_START	2
 #define PKT_FILE_UPLOAD_END	3
-#define PKT_FILE_UPLOAD_IMD	4
-
+// Chris added++ 03252018
+#define PKT_FILE_UPLOAD_MID	4
+#define PKT_TREE_PACKET
+// Chris added--
