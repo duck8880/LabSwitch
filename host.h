@@ -10,7 +10,7 @@ enum host_job_type {
 	JOB_FILE_UPLOAD_SEND,
 	JOB_FILE_UPLOAD_RECV_START,
 	JOB_FILE_UPLOAD_RECV_END,
-	JOB_FILE_UPLOAD_RECV_MID;	// Chris added
+	JOB_FILE_UPLOAD_RECV_MID	// Chris added
 };
 
 struct host_job {

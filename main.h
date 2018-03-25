@@ -45,7 +45,7 @@ struct payload_tree_packet {
 	int rootDist;
 	char senderType;
 	char senderChild;
-}
+};
 // Chris added--
 
 
