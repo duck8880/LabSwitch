@@ -57,5 +57,5 @@ struct payload_tree_packet {
 #define PKT_FILE_UPLOAD_END	3
 // Chris added++ 03252018
 #define PKT_FILE_UPLOAD_MID	4
-#define PKT_TREE_PACKET
+#define PKT_TREE_PACKET		5
 // Chris added--
