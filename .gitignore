@@ -1,10 +1,10 @@
-*
+./*
 
-!*/
-!.gitignore
+!/.*/
+!./.gitignore
 
-!*.c
-!*.h
-!*.config
-!makefile
+!./*.c
+!./*.h
+!./*.config
+!./makefile
 
