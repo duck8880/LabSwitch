@@ -22,6 +22,9 @@
 #define MAX_FILE_NAME 100
 #define PKT_PAYLOAD_MAX 100
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
+// Chris added++ 03262018
+#define TREE_PKT_INTVL		// The interval between sending two tree packets
+// Chris added--
 
 /* Types of packets */
 
@@ -255,6 +258,11 @@ struct file_buf f_buf_download;
 
 file_buf_init(&f_buf_upload);
 file_buf_init(&f_buf_download);
+
+// Chris added++ 03262018
+// For spanning tree
+int treePacketCnt = 0;
+// Chris added--
 
 /*
  * Initialize pipes 
@@ -751,6 +759,13 @@ while(1) {
 
 	}
 
+	// Chris added++ 03252018
+	// Send the tree packet
+	if (++treePacketCnt == TREE_PKT_INTVL / TENMILLISEC) {
+		send_tree_packet(node_port_num, host_id, 'H', node_port, 0, 0, 0);
+		treePacketCnt = 0;
+	}
+	// Chris added--
 
 	/* The host goes to sleep for 10 ms */
 	usleep(TENMILLISEC);
