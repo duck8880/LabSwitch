@@ -41,7 +41,7 @@ struct packet { /* struct for a packet */
 // Chris added++ 03252018
 // Payload of tree packet
 struct payload_tree_packet {
-	int rootID;
+	char rootID;
 	int rootDist;
 	char senderType;
 	char senderChild;

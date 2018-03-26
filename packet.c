@@ -64,3 +64,36 @@ return(n);
 }
 
 
+int send_tree_packet(int node_port_num, int node_id, char node_type, struct net_port **node_port, 
+		int localRootID, int localRootDist, int localParent) {
+	int k;
+	struct payload_tree_packet *payload_tree;
+	struct packet *new_packet;
+
+	for (k = 0; k < node_port_num; k++) { /* Scan all ports */
+		// Create the outgoing tree packet
+		new_packet = (struct packet *) malloc(sizeof(struct packet));
+		new_packet->src = (char) node_id;
+		new_packet->dst = 0;
+		new_packet->type = PKT_TREE_PACKET;
+		new_packet->length = sizeof(struct payload_tree_packet);
+	
+		// Create the payload of the tree packet
+		payload_tree = (struct payload_tree_packet *)new_packet->payload;
+		payload_tree->rootID = (char)localRootID;
+		payload_tree->rootDist = localRootDist;
+		payload_tree->senderType = node_type;
+		if (k == localParent) {
+			payload_tree->senderChild = 'Y';
+		} else {
+			payload_tree->senderChild = 'N';
+		}
+	
+		// Send the packet
+		packet_send(node_port[k], new_packet);
+		free(new_packet);
+	}
+}
+
+
+

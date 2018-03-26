@@ -1,6 +1,7 @@
-/*
+*
 
-!*/
+!TestDir0
+!TestDir1
 !.gitignore
 
 !*.c
