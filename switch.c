@@ -20,7 +20,7 @@
 #define PKT_PAYLOAD_MAX 100
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
 #define FORWARDING_TABLE_SIZE 100
-#define TREE_PKT_INTVL		// The interval between sending two tree packets
+#define TREE_PKT_INTVL	100000	// The interval between sending two tree packets
 
 // Look up the destination in the forwading table and update the table
 // Return the number of out port
@@ -57,6 +57,7 @@ int look_up_update_ftable(struct forwarding_table_entry forwarding_table[],
 	}
 
 	// Print out the forwarding table for debugging
+	/*
 	k = 0;
 	printf("Swtich debug: forwarding table:\n");
 	printf("Valid\tDest\tPort\t\n");
@@ -65,7 +66,7 @@ int look_up_update_ftable(struct forwarding_table_entry forwarding_table[],
 			forwarding_table[k].dest, forwarding_table[k].port);
 		k++;
 	}
-
+	*/
 	return out_port;
 	
 }	
@@ -79,7 +80,7 @@ int update_tree_info(struct packet *in_packet, int k, int *localRootID,
 	
 	if (payload_tree->senderType == 'S') {
 		if (payload_tree->rootID < *localRootID) { // Found a better root
-			*localRootID = payload_tree->rootID // Node becomes the child of the neighbor at port k
+			*localRootID = payload_tree->rootID; // Node becomes the child of the neighbor at port k
 			*localParent = k;
 			*localRootDist = payload_tree->rootDist + 1; // New distance = neighbor distance + one hop to neighbor
 		} else if (payload_tree->rootID == *localRootID) { // The root is the same
@@ -224,7 +225,7 @@ while(1) {
 					} else {
 						// Broadcast packet
 						for (i = 0; i < node_port_num; i++) {
-							if (i != k || localPortTree[i] == 1) {	
+							if (i != k && localPortTree[i] == 1) {	
 								// Send to ports only in the tree
 								// Don't send to the incoming port
 								packet_send(node_port[i], in_packet);

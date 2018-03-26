@@ -23,7 +23,7 @@
 #define PKT_PAYLOAD_MAX 100
 #define TENMILLISEC 10000   /* 10 millisecond sleep */
 // Chris added++ 03262018
-#define TREE_PKT_INTVL		// The interval between sending two tree packets
+#define TREE_PKT_INTVL 100000		// The interval between sending two tree packets
 // Chris added--
 
 /* Types of packets */
