@@ -1,0 +1,11 @@
+*
+
+!TestDir0
+!TestDir1
+!.gitignore
+
+!*.c
+!*.h
+!*.config
+!makefile
+!README
