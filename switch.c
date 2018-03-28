@@ -52,8 +52,8 @@ int look_up_update_ftable(struct forwarding_table_entry forwarding_table[],
 		forwarding_table[k].valid = 1;
 		forwarding_table[k].dest = in_packet->src;
 		forwarding_table[k].port = in_port;
-		printf("Swtich debug: recorded node %d at port %d in the forwarding table\n", 
-			in_packet->src, in_port);
+		//printf("Swtich debug: recorded node %d at port %d in the forwarding table\n", 
+		//	in_packet->src, in_port);
 	}
 
 	// Print out the forwarding table for debugging
@@ -83,10 +83,14 @@ int update_tree_info(struct packet *in_packet, int k, int *localRootID,
 			*localRootID = payload_tree->rootID; // Node becomes the child of the neighbor at port k
 			*localParent = k;
 			*localRootDist = payload_tree->rootDist + 1; // New distance = neighbor distance + one hop to neighbor
+			printf("Swtich %d debug: new root = %d, parent = %d, dist = %d\n", 
+				in_packet->dst, *localRootID, *localParent, *localRootDist);
 		} else if (payload_tree->rootID == *localRootID) { // The root is the same
 			if (*localRootDist > payload_tree->rootDist + 1) { // Found a better path to the root
 				*localParent = k;
 				*localRootDist = payload_tree->rootDist + 1; // New distance = neighbor dist + one hop to neighbor
+				printf("Swtich %d debug: updated root path, root = %d, new parent = %d, new dist = %d\n", 
+					in_packet->dst, *localRootID, *localParent, *localRootDist);
 			}
 		}
 	}
@@ -207,6 +211,7 @@ while(1) {
 			out_port = look_up_update_ftable(forwarding_table, in_packet, k);
 
 			if (in_packet->type == PKT_TREE_PACKET) {
+				in_packet->dst = switch_id;		// Just for printing debugging msg
 				// Update localRootID, localRootDist, and localParent
 				update_tree_info(in_packet, k, &localRootID, &localRootDist, &localParent);
 				
