@@ -1,6 +1,14 @@
 /* Definitions and prototypes for the link (link.c)
  */
 
+// Chris added++ 04022018
+struct local_tree_info{
+	int rootID;
+	int rootDist;
+	int parent;		// The port number of the parent
+	int *portTree;
+}
+// Chris added--
 
 // receive packet on port
 int packet_recv(struct net_port *port, struct packet *p);

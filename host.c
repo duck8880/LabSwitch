@@ -261,6 +261,7 @@ file_buf_init(&f_buf_download);
 
 // Chris added++ 03262018
 // For spanning tree
+struct local_tree_info local;
 int treePacketCnt = 0;
 // Chris added--
 
@@ -292,6 +293,13 @@ for (k = 0; k < node_port_num; k++) {
 	node_port[k] = p;
 	p = p->next;
 }	
+
+// Chris added++ 04022018
+// Initialize the local information of the spanning tree 
+local.rootID = 0;
+local.rootDist = 0;
+local.parent = -1;	// port number
+// Chris added--
 
 /* Initialize the job queue */
 job_q_init(&job_q);
@@ -762,7 +770,7 @@ while(1) {
 	// Chris added++ 03252018
 	// Send the tree packet
 	if (++treePacketCnt == TREE_PKT_INTVL / TENMILLISEC) {
-		send_tree_packet(node_port_num, host_id, 'H', node_port, 0, 0, 0);
+		send_tree_packet(node_port_num, host_id, 'H', node_port, &local);
 		treePacketCnt = 0;
 	}
 	// Chris added--
