@@ -72,25 +72,24 @@ int look_up_update_ftable(struct forwarding_table_entry forwarding_table[],
 }	
 
 // Update localRootID, localRootDist, and localParent
-int update_tree_info(struct packet *in_packet, int k, int *localRootID, 
-		int *localRootDist, int *localParent) {
+int update_tree_info(struct packet *in_packet, int k, struct local_tree_info *local) {
 	struct payload_tree_packet *payload_tree;
 	
 	payload_tree = (struct payload_tree_packet *)in_packet->payload;
 	
 	if (payload_tree->senderType == 'S') {
-		if (payload_tree->rootID < *localRootID) { // Found a better root
-			*localRootID = payload_tree->rootID; // Node becomes the child of the neighbor at port k
-			*localParent = k;
-			*localRootDist = payload_tree->rootDist + 1; // New distance = neighbor distance + one hop to neighbor
+		if (payload_tree->rootID < local->rootID) { // Found a better root
+			local->rootID = payload_tree->rootID; // Node becomes the child of the neighbor at port k
+			local->parent = k;
+			local->rootDist = payload_tree->rootDist + 1; // New distance = neighbor distance + one hop to neighbor
 			printf("Swtich %d debug: new root = %d, parent = %d, dist = %d\n", 
-				in_packet->dst, *localRootID, *localParent, *localRootDist);
-		} else if (payload_tree->rootID == *localRootID) { // The root is the same
-			if (*localRootDist > payload_tree->rootDist + 1) { // Found a better path to the root
-				*localParent = k;
-				*localRootDist = payload_tree->rootDist + 1; // New distance = neighbor dist + one hop to neighbor
+				in_packet->dst, local->rootID, local->parent, local->rootDist);
+		} else if (payload_tree->rootID == local->rootID) { // The root is the same
+			if (local->rootDist > payload_tree->rootDist + 1) { // Found a better path to the root
+				local->parent = k;
+				local->rootDist = payload_tree->rootDist + 1; // New distance = neighbor dist + one hop to neighbor
 				printf("Swtich %d debug: updated root path, root = %d, new parent = %d, new dist = %d\n", 
-					in_packet->dst, *localRootID, *localParent, *localRootDist);
+					in_packet->dst, local->rootID, local->parent, local->rootDist);
 			}
 		}
 	}
@@ -99,23 +98,23 @@ int update_tree_info(struct packet *in_packet, int k, int *localRootID,
 }
 
 // Update status of local port k, whether it’s the tree or not.
-int update_port_tree(struct packet *in_packet, int *localPortTree, int k, int localParent) {
+int update_port_tree(struct packet *in_packet, int k, struct local_tree_info *local) {
 	struct payload_tree_packet *payload_tree;
 
 	payload_tree = (struct payload_tree_packet *)in_packet->payload;
 	
 	if (payload_tree->senderType == 'H') { // Port is attached to a host, so it’s part of the tree
-		localPortTree[k] = 1;
+		local->portTree[k] = 1;
 	} else if (payload_tree->senderType == 'S') { // Port is attached to a switch
-		if (localParent == k) { // Port is attached to the parent, so it’s part of the tree
-			localPortTree[k] = 1;
+		if (local->parent == k) { // Port is attached to the parent, so it’s part of the tree
+			local->portTree[k] = 1;
 		} else if (payload_tree->senderChild == 'Y') { // Port is attached to a child, so it’s part of the tree
-			localPortTree[k] = 1;
+			local->portTree[k] = 1;
 		} else {
-			localPortTree[k] = 0;
+			local->portTree[k] = 0;
 		}
 	} else {
-		localPortTree[k] = 0;
+		local->portTree[k] = 0;
 	}
 
 	return 1;
@@ -146,10 +145,7 @@ struct forwarding_table_entry forwarding_table[FORWARDING_TABLE_SIZE];
 int out_port;
 
 // For spanning tree
-int localRootID = switch_id;
-int localRootDist = 0;
-int localParent = -1;	// The port number of the parent
-int *localPortTree;
+struct local_tree_info local;
 int treePacketCnt = 0;
 
 
@@ -179,11 +175,16 @@ for (k = 0; k < node_port_num; k++) {
 	p = p->next;
 }	
 
-// Initialize the localPortTree array, none of the
-// ports is a part of the tree
-localPortTree = malloc(node_port_num * sizeof(int));
+// Initialize the local information of the spanning tree 
+local.rootID = switch_id;
+local.rootDist = 0;
+local.parent = -1;	// port number
+
+
+// None of the ports is a part of the tree
+local.portTree = malloc(node_port_num * sizeof(int));
 for (k = 0; k < node_port_num; k++) {
-	localPortTree[k] = 0;
+	local.portTree[k] = 0;
 }
 
 // Initialize the forwarding table
@@ -213,10 +214,10 @@ while(1) {
 			if (in_packet->type == PKT_TREE_PACKET) {
 				in_packet->dst = switch_id;		// Just for printing debugging msg
 				// Update localRootID, localRootDist, and localParent
-				update_tree_info(in_packet, k, &localRootID, &localRootDist, &localParent);
+				update_tree_info(in_packet, k, &local);
 				
 				// Update status of local port k, whether it’s the tree or not.
-				update_port_tree(in_packet, localPortTree, k, localParent);
+				update_port_tree(in_packet, k, &local);
 				
 			} else {
 				if (in_packet->dst != switch_id) {	// The destination is another node.
@@ -252,8 +253,7 @@ while(1) {
 
 	// Send the tree packet
 	if (++treePacketCnt == TREE_PKT_INTVL / TENMILLISEC) {
-		send_tree_packet(node_port_num, switch_id, 'S', node_port, 
-			localRootID, localRootDist, localParent);
+		send_tree_packet(node_port_num, switch_id, 'S', node_port, &local);
 		treePacketCnt = 0;
 	}
 

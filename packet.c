@@ -63,9 +63,9 @@ if (port->type == PIPE) {
 return(n);
 }
 
-
+// Chris modified++ 04022018
 int send_tree_packet(int node_port_num, int node_id, char node_type, struct net_port **node_port, 
-		int localRootID, int localRootDist, int localParent) {
+		struct local_tree_info *local) {
 	int k;
 	struct payload_tree_packet *payload_tree;
 	struct packet *new_packet;
@@ -80,10 +80,10 @@ int send_tree_packet(int node_port_num, int node_id, char node_type, struct net_
 	
 		// Create the payload of the tree packet
 		payload_tree = (struct payload_tree_packet *)new_packet->payload;
-		payload_tree->rootID = (char)localRootID;
-		payload_tree->rootDist = localRootDist;
+		payload_tree->rootID = (char)local->rootID;
+		payload_tree->rootDist = local->rootDist;
 		payload_tree->senderType = node_type;
-		if (k == localParent) {
+		if (k == local->parent) {
 			payload_tree->senderChild = 'Y';
 		} else {
 			payload_tree->senderChild = 'N';
@@ -94,6 +94,6 @@ int send_tree_packet(int node_port_num, int node_id, char node_type, struct net_
 		free(new_packet);
 	}
 }
-
+// Chris added--
 
 
