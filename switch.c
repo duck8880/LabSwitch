@@ -231,7 +231,7 @@ while(1) {
 					} else {
 						// Broadcast packet
 						for (i = 0; i < node_port_num; i++) {
-							if (i != k && localPortTree[i] == 1) {	
+							if (i != k && local.portTree[i] == 1) {	
 								// Send to ports only in the tree
 								// Don't send to the incoming port
 								packet_send(node_port[i], in_packet);

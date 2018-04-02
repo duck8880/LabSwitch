@@ -7,7 +7,7 @@ struct local_tree_info{
 	int rootDist;
 	int parent;		// The port number of the parent
 	int *portTree;
-}
+};
 // Chris added--
 
 // receive packet on port
