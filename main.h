@@ -58,4 +58,10 @@ struct payload_tree_packet {
 // Chris added++ 03252018
 #define PKT_FILE_UPLOAD_MID	4
 #define PKT_TREE_PACKET		5
+// Chris added++ 04122018
+#define PKT_DNS_REG			6
+#define PKT_DNS_REG_REPLY	7
+#define PKT_DNS_REQ			8
+#define PKT_DNS_REQ_REPLY	9
 // Chris added--
+
